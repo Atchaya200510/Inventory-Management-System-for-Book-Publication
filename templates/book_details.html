@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ book.title }} | Book Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="book-details-container">
+
+    <div class="book-details-card">
+
+        <img src="/static/cover/{{ book.image_url or 'default.jpg' }}"
+             class="details-cover"
+             alt="{{ book.title }}">
+
+        <div class="details-info">
+            <h2>{{ book.title }}</h2>
+
+            <p><strong>Author:</strong> {{ book.author }}</p>
+            <p><strong>Category:</strong> {{ book.category }}</p>
+            <p><strong>Price:</strong> ₹{{ book.price }}</p>
+            <p><strong>Available Stock:</strong> {{ book.quantity }}</p>
+
+            <div class="details-desc">
+                <strong>Description:</strong>
+                <p>{{ book.description or "No description available." }}</p>
+            </div>
+                <button onclick="goBackToBooks()">⬅ Back to Books</button>
+            </div>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

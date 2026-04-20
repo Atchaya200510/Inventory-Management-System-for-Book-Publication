@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Add Book</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">Inventory</h2>
+        <nav>
+            <a href="/staff_dashboard">Dashboard</a>
+            <a href="/add_book" class="active">Add Book</a>
+            <a href="/staff/view_books">Manage Books</a>
+            <a href="/stock_manage">Stock In / Out</a>
+            <a href="/staff/distributors">Manage Distributors</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+        <div class="page-center">
+
+            <div class="glass-card compact-card">
+                <h2>Add New Book</h2>
+
+                <form method="POST" action="/add_book" enctype="multipart/form-data"class="form-stack">
+                    <input type="text" name="title" placeholder="Book Title" required>
+                    <input type="text" name="author" placeholder="Author Name" required>
+
+                    <select name="category" required>
+                        <option value="">Select Category</option>
+                        <option value="Fiction">Fiction</option>
+                        <option value="Academic">Academic</option>
+                        <option value="Comics">Comics</option>
+                        <option value="Non-Fiction">Non-Fiction</option>
+                    </select>
+
+                    <input type="number" name="price" placeholder="Price (₹)" step="0.01" required>
+                    <input type="number" name="quantity" placeholder="Quantity" required>
+
+                   <label>Book Cover Image</label>
+                       <div class="file-upload-wrapper">
+                          <input type="file" id="imageInput" name="image" accept="image/*">
+                          <label for="imageInput" class="custom-file-btn">
+                            Choose Cover Image
+                          </label>
+                        </div>
+                
+                  <!-- Image Preview -->
+                <div class="preview-wrapper">
+                  <img id="imagePreview" style="display:none; width:150px; margin-top:15px; border-radius:10px;">
+                </div>   
+                    <button type="submit">Add Book</button>
+                    <button class="secondary-btn" onclick="goBack()">Back</button>
+
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+<script>
+function goBack() {
+    window.location.href = "/admin_dashboard";
+}
+
+document.getElementById("imageInput").addEventListener("change", function() {
+
+    const file = this.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const preview = document.getElementById("imagePreview");
+        preview.src = e.target.result;
+        preview.style.display = "block";
+    };
+
+    reader.readAsDataURL(file);
+});
+</script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

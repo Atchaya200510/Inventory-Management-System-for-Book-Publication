@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">Inventory</h2>
+    <nav>
+       <a href="/staff_dashboard" class="active">Dashboard</a>
+       <a href="/add_book">Add Book</a>
+       <a href="/staff/view_books">Manage Books</a>
+       <a href="/stock_manage">Stock In / Out</a>
+       <a href="/staff_distributors">Manage Distributors</a>
+       <a href="/logout">Logout</a>
+
+
+    </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content dashboard-center">
+       
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <h1>Welcome, Staff</h1>
+            <span class="role">Staff</span>
+        </header>
+
+        <!-- SUMMARY CARDS -->
+        <section class="cards-row">
+            <div class="card">
+                <h3>Total Books</h3>
+                <p id="totalBooks">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Stock</h3>
+                <p id="totalStock">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Distributors</h3>
+                <p id="totalDistributors">0</p>
+            </div>
+        </section>
+
+        <div class="dashboard-chart-card">
+            <h3>Best Selling Books</h3>
+
+             <div class="chart-wrapper">
+                <canvas id="bestSellerChart"></canvas>
+            </div>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <section class="hero-card">
+            <h2>Staff Actions</h2>
+            <p>Manage inventory, books, distributors and reports</p>
+
+            <div class="btn-group">
+                <a href="/add_book" class="btn">Add Book</a>
+                <a href="/stock_manage" class="btn">Manage Stock</a>
+                <a href="/staff_distributor" class="btn">Manage Distributors</a>
+            </div>
+        </section>
+    </main>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    loadBooksData();
+    loadDistributors();
+});
+/* BOOKS + STOCK */
+function loadBooksData() {
+    fetch("/api/books")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("totalBooks").innerText = data.length;
+
+            let stock = 0;
+            data.forEach(book => stock += book.quantity);
+
+            document.getElementById("totalStock").innerText = stock;
+        });
+}
+
+/* DISTRIBUTORS */
+function loadDistributors() {
+    fetch("/api/distributors")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("totalDistributors").innerText = data.length;
+        });
+}
+</script> 
+
+<script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+<script>
+fetch('/api/best_sellers')
+    .then(response => response.json())
+    .then(data => {
+
+        const labels = data.map(book => book.title);
+        const values = data.map(book => book.total_sold);
+
+        const ctx = document.getElementById('bestSellerChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+               datasets: [{
+                   label: 'Copies Sold',
+                   data: values,
+                   borderRadius: 8,
+
+                   backgroundColor: values.map(value =>
+                        value >= Math.max(...values) * 0.6 ? '#22c55e' : '#ef4444'
+                    ),
+
+                   barThickness: 60,          // 🔥 Increase this (try 60–80)
+                   maxBarThickness: 80        // Prevent too large
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        titleFont: { size: 16 },
+                        bodyFont: { size: 14 }
+                    }
+                   },
+                    scales: {
+                        x: {
+                           ticks: {
+                               font: {
+                                   size: 14,
+                                   weight: '600'
+                                }
+                            }
+                        },
+                        y: {
+                           beginAtZero: true,
+                           ticks: {
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+            }
+        });
+
+    });
+</script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>

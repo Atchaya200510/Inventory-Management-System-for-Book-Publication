@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">Inventory</h2>
+        <nav>
+            <a href="/admin_dashboard" class="active">Dashboard</a>
+            <a href="/admin/view_books">View Books</a>
+            <a href="/admin_distributors">Distributors</a>
+            <a href="/reports">Reports</a>
+            <a href="/view_bills">Sales History</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content dashboard-center">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <h1>Welcome, Admin</h1>
+            <span class="role admin-role">Admin</span>
+        </header>
+
+        <!-- SUMMARY CARDS -->
+        <section class="cards-row">
+            <div class="card">
+                <h3>Total Books</h3>
+                <p id="totalBooks">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Stock</h3>
+                <p id="totalStock">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Distributors</h3>
+                <p id="totalDistributors">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Sales</h3>
+                <p id="totalSales">₹0</p>
+            </div>
+            
+            <div class="card">
+                <h3>Total Bills</h3>
+                <p id="totalBills">₹0</p>
+            </div>
+
+            <div class="card danger">
+                <h3>Low Stock</h3>
+                <p id="lowStock">0</p>
+            </div>
+        </section>
+
+        <section class="card chart-card">
+            <h3>Daily Sales</h3>
+            <div class="chart-container">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </section>
+
+    </main>
+
+</div>
+<script src="{{ url_for('static', filename='js/chart.js') }}"></script>
+<script>
+if (localStorage.getItem("role") !== "admin") {
+    window.location.href = "/";
+}
+</script>
+
+<script>
+fetch("/api/sales_summary")
+    .then(res => res.json())
+    .then(data => {
+
+        const labels = data.map(d => d.day);
+        const totals = data.map(d => d.total);
+
+        new Chart(document.getElementById("salesChart"), {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Sales ₹",
+                    data: totals,
+                    backgroundColor: "#4F8EF7",   // Strong blue
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: "#1e293b",   // Dark text
+                            font: {
+                               family: "'Poppins', sans-serif",
+                               size: 14,
+                               weight: "600"   // Bold
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            color: "#1e293b",
+                            font: {
+                                family: "'Poppins', sans-serif",
+                                size: 13,
+                                weight: "600"   // Bold dates
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            color: "#1e293b",
+                            font: {
+                                family: "'Poppins', sans-serif",
+                                size: 13,
+                                weight: "600"
+                            }
+                        },
+                        grid: {
+                            color: "rgba(0,0,0,0.08)"
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<script>
+    
+/* LOAD DASHBOARD DATA */
+document.addEventListener("DOMContentLoaded", function () {
+    loadBooksData();
+    loadDistributors();
+});
+
+/* BOOKS + STOCK + LOW STOCK */
+function loadBooksData() {
+    fetch("/api/books")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("totalBooks").innerText = data.length;
+
+            let stock = 0;
+            let lowStock = 0;
+
+            data.forEach(book => {
+                stock += book.quantity;
+
+                if (book.quantity <= 5) {
+                    lowStock++;
+                }
+            });
+
+            document.getElementById("totalStock").innerText = stock;
+            document.getElementById("lowStock").innerText = lowStock;
+        });
+}
+
+/* DISTRIBUTORS */
+function loadDistributors() {
+    fetch("/api/distributors")
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("totalDistributors").innerText = data.length;
+        });
+}
+
+</script>
+
+<script>
+fetch("/api/dashboard/stats")
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("totalBooks").innerText = data.total_books;
+        document.getElementById("totalSales").innerText = "₹" + data.total_sales;
+        document.getElementById("totalBills").innerText = data.total_bills;
+    });
+</script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

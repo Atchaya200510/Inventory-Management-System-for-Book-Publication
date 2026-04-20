@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Books</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">Inventory</h2>
+        <nav>
+            <a href="/staff_dashboard">Dashboard</a>
+            <a href="/add_book">Add Book</a>
+            <a href="/staff/view_books" class="active">Manage Books</a>
+            <a href="/stock_manage">Stock In / Out</a>
+            <a href="/staff_distributors">Manage Distributors</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="page-header">
+           <h1>Manage Books</h1>
+
+           <div class="search-container">
+               <div class="search-toggle" onclick="toggleFilter()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+
+               <div class="filter-box" id="filterBox">
+                    <input type="text" id="search"
+                           placeholder="Search by title or author..."
+                           onkeyup="applyFilter()">
+                    <select id="category" onchange="applyFilter()">
+                         <option value="">All Categories</option>
+                         <option value="Fiction">Fiction</option>
+                         <option value="Non-Fiction">Non-Fiction</option>
+                         <option value="Academic">Academics</option>
+                        <option value="Comics">Comics</option>
+                    </select>
+            
+                </div>
+            </div>
+        </div>
+        
+        <div class="books-grid" id="booksGrid">
+            <!-- books injected here -->
+        </div>
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>

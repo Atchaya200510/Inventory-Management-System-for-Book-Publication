@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sales History</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <aside class="sidebar">
+        <h2 class="logo">Inventory</h2>
+        <nav>
+            <a href="/admin_dashboard">Dashboard</a>
+            <a href="/view_bills" class="active">Sales History</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        <h1>All Bills</h1>
+        <div class="white-card" style="padding: 20px; border-radius: 20px;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Bill ID</th>
+                    <th>Date</th>
+                    <th>Distributor</th>
+                    <th>Total (₹)</th>
+                    <th>Invoice</th>
+                </tr>
+            </thead>
+            <tbody id="billsTable"></tbody>
+        </table>
+        </div>
+    </main>
+
+</div>
+
+<!-- ✅ INLINE JS ONLY -->
+<script>
+// Replace this with your real API base URL
+const API_BASE = "http://127.0.0.1:5000";
+
+// Fetch bills and render table
+fetch(`${API_BASE}/api/bills`)
+    .then(res => res.json())
+    .then(data => {
+        const table = document.getElementById("billsTable");
+        table.innerHTML = "";
+
+        if (data.length === 0) {
+            table.innerHTML = `<tr><td colspan="5">No bills found</td></tr>`;
+            return;
+        }
+
+        // Sort bills by ID ascending (1 → n)
+        data.sort((a, b) => (a.id || a.bill_id) - (b.id || b.bill_id));
+
+        data.forEach(bill => {
+            const billId = bill.id || bill.bill_id;
+            table.innerHTML += `
+                <tr>
+                    <td>#${billId}</td>
+                    <td>${bill.date}</td>
+                    <td>${bill.distributor}</td>
+                    <td>₹${bill.total}</td>
+                    <td>
+                        <a href="/invoice_preview/${billId}" class="btn small">View</a>
+                        <a href="/invoice/${billId}" target="_blank" class="btn small">Bill PDF</a>
+                    </td>
+                </tr>
+            `;
+        });
+    })
+    .catch(err => console.error(err));
+</script>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

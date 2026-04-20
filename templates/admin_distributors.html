@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Distributors</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- ADMIN SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">Inventory</h2>
+        <nav>
+            <a href="/admin_dashboard">Dashboard</a>
+            <a href="/admin/view_books">View Books</a>
+            <a href="/admin_distributors"class="active">Distributors</a>
+            <a href="/reports">Reports</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="page-center">
+            <div class="glass-card compact-card">
+
+                <h2>Distributors</h2>
+                <p class="muted-text">View only</p>
+
+                <div class="table-wrapper">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Address</th>
+                            </tr>
+                        </thead>
+                        <tbody id="distributorTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</div>
+
+<script>
+fetch('/api/distributors')
+    .then(res => res.json())
+    .then(data => {
+        const tbody = document.getElementById('distributorTableBody');
+        tbody.innerHTML = "";
+
+        if (data.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="3">No distributors found</td>
+                </tr>
+            `;
+            return;
+        }
+
+        data.forEach(d => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${d.name}</td>
+                <td>${d.contact || '-'}</td>
+                <td>${d.address || '-'}</td>
+            `;
+            tbody.appendChild(row);
+        });
+});
+</script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

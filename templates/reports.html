@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reports</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="dashboard">
+
+<aside class="sidebar">
+    <h2 class="logo">Inventory</h2>
+    <nav>
+        <a href="/admin_dashboard">Dashboard</a>
+        <a href="/admin/view_books">View Books</a>
+        <a href="/admin_distributors">Distributors</a>
+        <a href="/reports" class="active">reports</a>
+        <a href="/logout">Logout</a>
+    </nav>
+</aside>
+
+<main class="main-content">
+
+<h1>Reports</h1>
+
+<!-- SALES -->
+<section class="card">
+<h3>Sales Report</h3>
+<table id="salesTable"></table>
+</section>
+
+<!-- STOCK -->
+<section class="card">
+<h3>Stock Report</h3>
+<table id="stockTable"></table>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const salesTable = document.getElementById("salesTable");
+    const stockTable = document.getElementById("stockTable");
+
+    // SALES REPORT
+    fetch("/api/reports/sales")
+        .then(r => r.json())
+        .then(d => {
+            let html = "<tr><th>ID</th><th>Date</th><th>Distributor</th><th>Total</th></tr>";
+
+            if (d.length === 0) {
+                html += "<tr><td colspan='4'>No sales data</td></tr>";
+            } else {
+                d.forEach(r => {
+                    html += `
+                        <tr>
+                            <td>${r.id}</td>
+                            <td>${r.date}</td>
+                            <td>${r.name}</td>
+                            <td>₹${r.total}</td>
+                        </tr>`;
+                });
+            }
+            salesTable.innerHTML = html;
+        });
+
+    // STOCK REPORT
+    fetch("/api/reports/stock")
+        .then(r => r.json())
+        .then(d => {
+            let html = "<tr><th>Title</th><th>Category</th><th>Qty</th><th>Price</th></tr>";
+
+            if (d.length === 0) {
+                html += "<tr><td colspan='4'>No stock data</td></tr>";
+            } else {
+                d.forEach(r => {
+                    html += `
+                        <tr>
+                            <td>${r.title}</td>
+                            <td>${r.category}</td>
+                            <td>${r.quantity}</td>
+                            <td>₹${r.price}</td>
+                        </tr>`;
+                });
+            }
+            stockTable.innerHTML = html;
+        });
+
+});
+</script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>

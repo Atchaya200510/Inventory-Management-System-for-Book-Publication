@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory Management System</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body class="home-bg">
+
+    <div class="home-layout">
+
+        <!-- LEFT : SVG Illustration -->
+        <div class="illustration-box">
+            <img src="{{ url_for('static', filename='images/home_illustration.svg') }}"
+                 alt="Inventory Illustration"
+                 class="auth-illustration">
+        </div>
+
+        <!-- RIGHT : GLASS CARD -->
+        <div class="glass-card">
+            <h1>Inventory Management System<br>for A2B Book Publications</h1>
+
+            <div class="login-buttons">
+                <a href="/admin_login" class="login-btn admin">Admin Login</a>
+                <a href="/staff_login" class="login-btn staff">Staff Login</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>

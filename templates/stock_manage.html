@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Stock</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">Inventory</h2>
+        <nav>
+            <a href="/staff_dashboard">Dashboard</a>
+            <a href="/add_book">Add Books</a>
+            <a href="/staff/view_books">Manage Books</a>
+            <a href="/stock_manage" class="active">Stock In / Out</a>
+            <a href="/staff_distributors">Manage Distributors</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+        <div class="page-center">
+
+            <div class="glass-card add-book-card">
+
+                <h2>Stock In / Stock Out</h2>
+
+                <select id="bookSelect"></select>
+                <input type="number" id="quantity" placeholder="Enter Quantity">
+                <!-- HIDDEN Stock Out details -->
+                <div id="stockOutDetails" style="display:none; margin-top:10px;">
+                    <select id="distributor">
+                    <option value="">Select Distributor</option>
+                    </select>
+
+                </div>
+
+               <button type="button" onclick="stockIn()">Stock In</button>
+               <button type="button" onclick="stockOut()">Stock Out</button>
+
+                <p id="message"></p>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+let stockOutMode = false;
+
+const bookSelect = document.getElementById('bookSelect');
+const quantity = document.getElementById('quantity');
+const distributor = document.getElementById('distributor');
+const message = document.getElementById('message');
+
+fetch('/api/books')
+    .then(res => res.json())
+    .then(data => {
+        data.forEach(book => {
+            const option = document.createElement('option');
+            option.value = book.id;
+            option.text = `${book.title} (Stock: ${book.quantity})`;
+            bookSelect.appendChild(option);
+        });
+    });
+// Populate distributor dropdown for Stock Out
+fetch('/api/distributors')
+    .then(res => res.json())
+    .then(data => {
+        data.forEach(d => {
+            const option = document.createElement('option');
+            option.value = d.id;      // matches backend 'distributor_id'
+            option.text = d.name;     // display distributor name
+            distributor.appendChild(option);
+        });
+    });
+
+function stockIn() {
+    stockOutMode = false;
+    document.getElementById("stockOutDetails").style.display = "none";
+    updateStock('in');
+}
+
+function stockOut() {
+    if (!stockOutMode) {
+        stockOutMode = true;
+        document.getElementById("stockOutDetails").style.display = "block";
+        message.innerText = "Select distributor and enter quantity";
+        return;
+    }
+
+    if (!distributor.value) {
+        message.innerText = "Please select distributor";
+        return;
+    }
+
+    updateStock('out');
+}
+
+function updateStock(type) {
+    let payload = {
+        book_id: bookSelect.value,
+        quantity: quantity.value,
+        action: type
+    };
+
+    if (type === 'out') {
+        payload.distributor_id = distributor.value;
+    }
+
+    fetch('/update_stock', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+        message.innerText = data.message;
+
+        if (data.bill_id) {
+            window.location.href = `/invoice_preview/${data.bill_id}`;
+        } else {
+            location.reload();
+        }
+    });
+}
+</script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

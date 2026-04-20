@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice Preview</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+<div class="invoice-page-center">
+
+    <div class="white-card">
+
+       <h2 id="invoice-number">Invoice #</h2>
+
+       <div class="invoice-meta">
+           <p><strong>Date:</strong> <span id="invoice-date"></span></p>
+           <p><strong>Distributor:</strong> <span id="invoice-distributor"></span></p>
+       </div>
+
+       <table class="invoice-table">
+           <thead>
+               <tr>
+                   <th>Book</th>
+                   <th>Qty</th>
+                   <th>Price</th>
+                   <th>Total</th>
+               </tr>
+           </thead>
+           <tbody id="invoice-items">
+           </tbody>
+       </table>
+
+       <div class="invoice-total">
+           <h3>Grand Total: ₹<span id="invoice-grand-total">0</span></h3>
+       </div>
+
+       <div class="invoice-actions">
+           <a href="{{ back_url }}" class="btn secondary">Back</a>
+           <a id="download-pdf" href="#" target="_blank" class="btn">Download PDF</a>
+       </div>
+
+    </div>
+
+</div>
+
+<script>
+// Example: Replace this with your API call to get the invoice
+const billId = window.location.pathname.split("/").pop();
+fetch(`/api/invoice/${billId}`)
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("invoice-number").textContent = "Invoice #" + data.bill.id;
+        document.getElementById("invoice-date").textContent = data.bill.date;
+        document.getElementById("invoice-distributor").textContent = data.bill.name;
+
+        const tbody = document.getElementById("invoice-items");
+        tbody.innerHTML = "";
+        let grandTotal = 0;
+
+        data.items.forEach(item => {
+            const total = item.quantity * item.price;
+            grandTotal += total;
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${item.title}</td>
+                <td>${item.quantity}</td>
+                <td>₹${item.price}</td>
+                <td>₹${total}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        document.getElementById("invoice-grand-total").textContent = grandTotal;
+
+        // Set download PDF link
+        document.getElementById("download-pdf").href = `/invoice/${data.bill.id}`;
+    })
+    .catch(err => console.error("Failed to load invoice:", err));
+</script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

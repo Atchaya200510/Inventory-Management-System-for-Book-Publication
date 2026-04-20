@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Book</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2 class="logo">Inventory</h2>
+        <nav>
+            <a href="/staff_dashboard">Dashboard</a>
+            <a href="/add_book">Add Book</a>
+            <a href="/staff/view_books">Manage Books</a>
+            <a href="/stock_manage">Stock In / Out</a>
+            <a href="/distributors">Distributors</a>
+            <a href="/logout">Logout</a>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+        <div class="page-center">
+
+            <div class="glass-card edit-card">
+
+                <h2>Edit Book</h2>
+
+                <input type="text" id="title" placeholder="Title" required>
+                <input type="text" id="author" placeholder="Author" required>
+                <input type="text" id="category" placeholder="Category" required>
+                <input type="number" id="price" placeholder="Price" required>
+
+                <textarea
+                    id="description"
+                    class="glass-textarea"
+                    placeholder="Description"
+                    rows="4"
+                ></textarea>
+
+                <div class="img-section">
+                    <p class="img-label">Cover Image</p>
+
+                    <img
+                        id="previewImg"
+                        class="preview-img"
+                        alt="Cover Preview"
+                        style="display:none;"
+                    >
+
+                    <label class="file-label">
+                        Change Cover Image
+                        <input
+                            type="file"
+                            id="image"
+                            accept="image/*"
+                            onchange="previewImage(event)"
+                        > 
+                    </label>
+                </div>
+
+                <div class="btn-row">
+                    <button onclick="saveBook()">Save Changes</button>
+                    <button onclick="goBack()" class="secondary-btn">Cancel</button>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const book = JSON.parse(localStorage.getItem("editBook"));
+
+    if (!book) {
+        alert("No book selected");
+        window.location.href = "/staff/view_books";
+        return;
+    }
+
+    document.getElementById("title").value = book.title;
+    document.getElementById("author").value = book.author;
+    document.getElementById("category").value = book.category;
+    document.getElementById("price").value = book.price;
+    document.getElementById("description").value = book.description || "";
+
+    // ✅ show existing cover
+    if (book.cover) {
+        const img = document.getElementById("previewImg");
+        img.src = `/static/covers/${book.cover}`;
+        img.style.display = "block";
+    }
+});
+</script>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>
