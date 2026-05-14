@@ -94,11 +94,13 @@ https://inventory-management-system-for-book.onrender.com
 ```
 Login credentials for Admin and Staff
 
-Admin
+1. Admin
+
 Username: admin
 password: admin0123
 
-Staff
+2. Staff
+   
 Username: staff
 Password: staff0123
 
