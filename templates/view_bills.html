@@ -43,10 +43,10 @@
 </div>
 
 <!-- ✅ INLINE JS ONLY -->
- 
+
 <script>
 // Fetch bills and render table
-fetch(`${API_BASE}/api/bills`)
+fetch('/api/bills')
     .then(res => res.json())
     .then(data => {
         const table = document.getElementById("billsTable");
